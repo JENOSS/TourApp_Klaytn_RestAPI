@@ -24,6 +24,21 @@ module.exports = function(app, User)
         res.end();
     });
 
+
+    app.post('/users/find', function(req,res) {
+  
+        User.findOne({email: req.body.email}, {_id: 0, password: 1, privatekey: 1}, function(err, user){
+          if(err) return res.status(500).json({error: err});
+          if(user.length === 0 ) return res.status(404).json({error: 'user not found'});
+          if(user.password != req.body.password) return res.status(404).json({error: 'password not equal'});
+      
+          res.json(user.privatekey);
+            
+        })
+
+
+    });
+
     app.post('/users/create', function(req,res) {
         var user = new User();
         user.email = req.body.email;
@@ -38,6 +53,7 @@ module.exports = function(app, User)
             if(err){
                 console.error(err);
                 res.json({result: 0});
+             
                 return;
             }
 
